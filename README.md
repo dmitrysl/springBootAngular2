@@ -50,3 +50,21 @@ if you have any input, or contributions, please share!
 
 ## license
 [MIT](/LICENSE)
+
+
+## Deploy on heroku
+
+heroku create --buildpack http://github.com/noliar/dotnet-buildpack.git
+git push heroku master
+heroku auth:token
+
+heroku plugins:install heroku-repo
+
+heroku create pst-portal-java --buildpack heroku/gradle
+
+
+web: cd build ; java -Dgrails.env=prod -Dserver.port=$PORT $JAVA_OPTS -jar target/*.jar
+web: java -Dgrails.env=prod -jar build/libs/jetty-runner.jar --port $PORT build/libs/*.war
+
+web: java $JAVA_OPTS -jar target/dependency/jetty-runner-8.1.7.v20120910.jar --lib target/hibernate-search-demo-0.0.1-SNAPSHOT/WEB-INF/lib --port $PORT --jdbc org.apache.commons.dbcp.BasicDataSource "url=jdbc:h2:mem:vaporware;DB_CLOSE_DELAY=-1" "jdbc/vaporwareDB" target/*.war
+
