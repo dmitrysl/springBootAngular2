@@ -130,14 +130,14 @@ task copyToLib << {
 	}
 }
 
-task copyToLib(type: Copy) {
+task copyToLib2(type: Copy) {
 	into "$buildDir/server"
 	from(configurations.compile) {
 		include "webapp-runner*"
 	}
 }
 
-task stage(dependsOn: ["clean", "war", "copyToLib"])
+task stage(dependsOn: ["clean", "war", "copyToLib", copyToLib2])
 
 // run spring boot app
 bootRun {
