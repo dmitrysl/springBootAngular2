@@ -61,7 +61,8 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 	// google gson
 	compile('com.google.code.gson:gson:2.6.2')
-	runtimeOnly 'com.github.jsimone:webapp-runner:8.0.33.1'
+	// https://mvnrepository.com/artifact/com.github.jsimone/webapp-runner
+	compile group: 'com.github.jsimone', name: 'webapp-runner', version: '8.0.33.1'
 	compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version:'2.6.2'
 
 	// spring dev tools
@@ -71,7 +72,7 @@ dependencies {
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 
 	// to run our App on Heroku
-	runtimeOnly "org.mortbay.jetty:jetty-runner:8.1.1.v20120215"
+//	runtimeOnly "org.mortbay.jetty:jetty-runner:8.1.1.v20120215"
 	// monitoring on Heroku
 	runtimeOnly "com.newrelic.agent.java:newrelic-agent:2.18.0"
 }
@@ -132,13 +133,9 @@ task npmClean(type: Delete) {
 
 task copyToLib << {
 	copy {
-		from configurations.runtimeOnly.copy().setTransitive(false)
+		from configurations.compile
 		into "$buildDir/libs"
-		rename { name ->
-			def artifacts = configurations.runtimeOnly.resolvedConfiguration.resolvedArtifacts
-			def artifact = artifacts.find { it.file.name == name }
-			"${artifact.name}.${artifact.extension}"
-		}
+		include "webapp-runner*"
 	}
 }
 
