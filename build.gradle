@@ -19,6 +19,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
 apply plugin: 'war'
+apply plugin: 'jetty'
 
 repositories {
 	mavenCentral()
@@ -29,6 +30,10 @@ eclipse {
 		 containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
 		 containers('org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8')
 	}
+}
+
+jettyRun {
+
 }
 
 idea {
@@ -56,7 +61,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 	// google gson
 	compile('com.google.code.gson:gson:2.6.2')
-	compile 'com.github.jsimone:webapp-runner:8.0.33.1'
+	runtimeOnly 'com.github.jsimone:webapp-runner:8.0.33.1'
 	compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version:'2.6.2'
 
 	// spring dev tools
@@ -122,6 +127,13 @@ task copyToLib << {
 			def artifact = artifacts.find { it.file.name == name }
 			"${artifact.name}.${artifact.extension}"
 		}
+	}
+}
+
+task copyToLib(type: Copy) {
+	into "$buildDir/server"
+	from(configurations.compile) {
+		include "webapp-runner*"
 	}
 }
 

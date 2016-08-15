@@ -1,1 +1,1 @@
-web: java -Dgrails.env=prod -jar build/libs/jetty-runner.jar --port $PORT build/libs/*.war
+web: java -Dgrails.env=prod -jar build/server/webapp-runner-*.jar --port $PORT build/libs/*.war
