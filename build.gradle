@@ -18,6 +18,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
+apply plugin: 'war'
 
 repositories {
 	mavenCentral()
@@ -47,6 +48,7 @@ targetCompatibility = 1.8
 
 configurations {
 	dev
+	runtimeOnly
 }
 
 dependencies {
@@ -55,12 +57,18 @@ dependencies {
 	// google gson
 	compile('com.google.code.gson:gson:2.6.2')
 	compile 'com.github.jsimone:webapp-runner:8.0.33.1'
+	compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version:'2.6.2'
 
 	// spring dev tools
 	dev('org.springframework.boot:spring-boot-devtools')
 
 	// testing
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+
+	// to run our App on Heroku
+	runtimeOnly "org.mortbay.jetty:jetty-runner:8.1.1.v20120215"
+	// monitoring on Heroku
+	runtimeOnly "com.newrelic.agent.java:newrelic-agent:2.18.0"
 }
 
 def generatedWebResources = "${buildDir}/generated-web-resources"
@@ -105,25 +113,19 @@ task npmClean(type: Delete) {
 	delete "${webDir}/typings"
 }
 
-//task stage() {
-//	dependsOn clean, war
-//}
-//tasks.stage.doLast() {
-//	delete fileTree(dir: "build/distributions")
-//	delete fileTree(dir: "build/assetCompile")
-//	delete fileTree(dir: "build/distributions")
-//	delete fileTree(dir: "build/libs", exclude: "*.war")
-//}
-//war.mustRunAfter clean
-//
-//task copyToLib(type: Copy) {
-//	into "$buildDir/server"
-//	from(configurations.compile) {
-//		include "webapp-runner*"
-//	}
-//}
-//
-//stage.dependsOn(copyToLib)
+task copyToLib << {
+	copy {
+		from configurations.runtimeOnly.copy().setTransitive(false)
+		into "$buildDir/libs"
+		rename { name ->
+			def artifacts = configurations.runtimeOnly.resolvedConfiguration.resolvedArtifacts
+			def artifact = artifacts.find { it.file.name == name }
+			"${artifact.name}.${artifact.extension}"
+		}
+	}
+}
+
+task stage(dependsOn: ["clean", "war", "copyToLib"])
 
 // run spring boot app
 bootRun {
