@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/dmitrysl/spring-boot-angular2.svg?branch=master)](https://travis-ci.org/dmitrysl/spring-boot-angular2)
+[![Build Status](https://travis-ci.org/dmitrysl/springBootAngular2.svg?branch=master)](https://travis-ci.org/dmitrysl/springBootAngular2)
 
 # upcoming changes
 
